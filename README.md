@@ -30,6 +30,10 @@ dotnet test HeartbeatFrontWeb.sln
 dotnet run --project src/Heartbeat.Portal/Heartbeat.Portal.csproj
 ```
 
+El detalle de un astronauta incluye un asistente Claude para usuarios con `vitals.view`. El portal envía la sesión de
+Mission Control a Heartbeat.Api y nunca recibe ni almacena la API key de Anthropic. Claude solo explica el estado y las
+alertas abiertas que Heartbeat ya calculó; no diagnostica ni sustituye procedimientos oficiales.
+
 El backend, los contratos y todos los tickets viven en
 [HeartbeatBackend](https://github.com/AliaJimenez/HeartbeatBackend). La app de
 escritorio vive en

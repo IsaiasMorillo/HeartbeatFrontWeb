@@ -1,0 +1,142 @@
+@using System.Net
+@inject MissionControlClient Client
+@inject IStringLocalizer<SharedResource> T
+
+<section class="assistant-panel" aria-labelledby="assistant-title">
+    <header class="assistant-heading">
+        <div class="assistant-mark" aria-hidden="true">AI</div>
+        <div>
+            <h2 id="assistant-title">@T["Heartbeat assistant"]</h2>
+            <p>@T["Ask Claude to explain this astronaut's current status and open alerts."]</p>
+        </div>
+    </header>
+
+    <p class="assistant-disclaimer">@T["Claude supports decisions but does not diagnose or replace official emergency procedures."]</p>
+
+    <div class="assistant-conversation" aria-live="polite" aria-busy="@_sending">
+        @if (_messages.Count == 0)
+        {
+            <p class="assistant-empty">@T["No questions yet. Claude only receives the verified Heartbeat context for this astronaut."]</p>
+        }
+        @foreach (var message in _messages)
+        {
+            <article class="assistant-message assistant-message--@(message.IsUser ? "user" : "claude")">
+                <strong>@(message.IsUser ? T["You"] : "Claude")</strong>
+                <p>@message.Text</p>
+            </article>
+        }
+        @if (_sending)
+        {
+            <div class="assistant-thinking" role="status">
+                <span class="session-spinner" aria-hidden="true"></span>
+                <span>@T["Claude is reviewing the current data…"]</span>
+            </div>
+        }
+    </div>
+
+    @if (_suggestions.Count > 0)
+    {
+        <div class="assistant-suggestions" aria-label="@T["Suggested questions"]">
+            @foreach (var suggestion in _suggestions)
+            {
+                <button type="button" @onclick="() => UseSuggestion(suggestion)" disabled="@_sending">@suggestion</button>
+            }
+        </div>
+    }
+
+    @if (_error is not null)
+    {
+        <p class="assistant-error" role="alert">@_error</p>
+    }
+
+    <div class="assistant-composer">
+        <label for="assistant-question">@T["Question for Claude"]</label>
+        <textarea id="assistant-question"
+                  maxlength="1000"
+                  rows="3"
+                  placeholder="@T["Ask about the status or an active alert…"]"
+                  @bind="_question"
+                  disabled="@_sending"></textarea>
+        <div>
+            <span>@_question.Length / 1000</span>
+            <button type="button" @onclick="SendAsync" disabled="@(!CanSend)">@T["Send question"]</button>
+        </div>
+    </div>
+</section>
+
+@code {
+    [Parameter, EditorRequired]
+    public Guid AstronautId { get; set; }
+
+    private readonly List<AssistantChatMessage> _messages = [];
+    private readonly List<string> _suggestions = [];
+    private string _question = string.Empty;
+    private string? _error;
+    private bool _sending;
+    private Guid _loadedAstronautId;
+
+    private bool CanSend => !_sending && !string.IsNullOrWhiteSpace(_question) && _question.Length <= 1000;
+
+    protected override void OnParametersSet()
+    {
+        if (_loadedAstronautId == AstronautId)
+        {
+            return;
+        }
+
+        _loadedAstronautId = AstronautId;
+        _messages.Clear();
+        _suggestions.Clear();
+        _question = string.Empty;
+        _error = null;
+    }
+
+    private async Task SendAsync()
+    {
+        if (!CanSend)
+        {
+            return;
+        }
+
+        string question = _question.Trim();
+        _question = string.Empty;
+        _error = null;
+        _messages.Add(new AssistantChatMessage(question, true));
+        _sending = true;
+
+        try
+        {
+            AssistantResponse response = await Client.AskAssistantAsync(
+                AstronautId,
+                question,
+                CultureInfo.CurrentUICulture.TwoLetterISOLanguageName);
+            _messages.Add(new AssistantChatMessage(response.Answer, false));
+            _suggestions.Clear();
+            _suggestions.AddRange(response.SuggestedQuestions);
+        }
+        catch (HttpRequestException exception) when (exception.StatusCode == HttpStatusCode.Unauthorized)
+        {
+            _error = T["Your session expired. Sign in to continue."];
+        }
+        catch (HttpRequestException exception) when (exception.StatusCode == HttpStatusCode.Forbidden)
+        {
+            _error = T["You do not have permission to use the assistant for this astronaut."];
+        }
+        catch (HttpRequestException exception) when (exception.StatusCode is HttpStatusCode.BadGateway or HttpStatusCode.ServiceUnavailable)
+        {
+            _error = T["Claude is temporarily unavailable. Heartbeat's displayed status remains valid."];
+        }
+        catch (Exception exception) when (exception is HttpRequestException or InvalidDataException or TaskCanceledException)
+        {
+            _error = T["Could not contact the assistant. Check the connection and try again."];
+        }
+        finally
+        {
+            _sending = false;
+        }
+    }
+
+    private void UseSuggestion(string suggestion) => _question = suggestion;
+
+    private sealed record AssistantChatMessage(string Text, bool IsUser);
+}

@@ -85,4 +85,17 @@
   <data name="You do not have permission to export reports." xml:space="preserve"><value>No tienes permiso para exportar reportes.</value></data>
   <data name="The report was not found." xml:space="preserve"><value>No se encontró el reporte.</value></data>
   <data name="Could not download the report. Try again." xml:space="preserve"><value>No se pudo descargar el reporte. Inténtalo de nuevo.</value></data>
+  <data name="Heartbeat assistant" xml:space="preserve"><value>Asistente de Heartbeat</value></data>
+  <data name="Ask Claude to explain this astronaut's current status and open alerts." xml:space="preserve"><value>Pide a Claude que explique el estado actual y las alertas abiertas de este astronauta.</value></data>
+  <data name="Claude supports decisions but does not diagnose or replace official emergency procedures." xml:space="preserve"><value>Claude apoya las decisiones, pero no diagnostica ni sustituye los procedimientos oficiales de emergencia.</value></data>
+  <data name="No questions yet. Claude only receives the verified Heartbeat context for this astronaut." xml:space="preserve"><value>Aún no hay preguntas. Claude solo recibe el contexto verificado de Heartbeat para este astronauta.</value></data>
+  <data name="You" xml:space="preserve"><value>Tú</value></data>
+  <data name="Claude is reviewing the current data…" xml:space="preserve"><value>Claude está revisando los datos actuales…</value></data>
+  <data name="Suggested questions" xml:space="preserve"><value>Preguntas sugeridas</value></data>
+  <data name="Question for Claude" xml:space="preserve"><value>Pregunta para Claude</value></data>
+  <data name="Ask about the status or an active alert…" xml:space="preserve"><value>Pregunta por el estado o una alerta activa…</value></data>
+  <data name="Send question" xml:space="preserve"><value>Enviar pregunta</value></data>
+  <data name="You do not have permission to use the assistant for this astronaut." xml:space="preserve"><value>No tienes permiso para usar el asistente con este astronauta.</value></data>
+  <data name="Claude is temporarily unavailable. Heartbeat's displayed status remains valid." xml:space="preserve"><value>Claude no está disponible temporalmente. El estado mostrado por Heartbeat sigue siendo válido.</value></data>
+  <data name="Could not contact the assistant. Check the connection and try again." xml:space="preserve"><value>No se pudo contactar al asistente. Revisa la conexión e inténtalo de nuevo.</value></data>
 </root>

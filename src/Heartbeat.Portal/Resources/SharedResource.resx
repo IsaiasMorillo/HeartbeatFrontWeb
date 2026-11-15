@@ -85,4 +85,17 @@
   <data name="You do not have permission to export reports." xml:space="preserve"><value>You do not have permission to export reports.</value></data>
   <data name="The report was not found." xml:space="preserve"><value>The report was not found.</value></data>
   <data name="Could not download the report. Try again." xml:space="preserve"><value>Could not download the report. Try again.</value></data>
+  <data name="Heartbeat assistant" xml:space="preserve"><value>Heartbeat assistant</value></data>
+  <data name="Ask Claude to explain this astronaut's current status and open alerts." xml:space="preserve"><value>Ask Claude to explain this astronaut's current status and open alerts.</value></data>
+  <data name="Claude supports decisions but does not diagnose or replace official emergency procedures." xml:space="preserve"><value>Claude supports decisions but does not diagnose or replace official emergency procedures.</value></data>
+  <data name="No questions yet. Claude only receives the verified Heartbeat context for this astronaut." xml:space="preserve"><value>No questions yet. Claude only receives the verified Heartbeat context for this astronaut.</value></data>
+  <data name="You" xml:space="preserve"><value>You</value></data>
+  <data name="Claude is reviewing the current data…" xml:space="preserve"><value>Claude is reviewing the current data…</value></data>
+  <data name="Suggested questions" xml:space="preserve"><value>Suggested questions</value></data>
+  <data name="Question for Claude" xml:space="preserve"><value>Question for Claude</value></data>
+  <data name="Ask about the status or an active alert…" xml:space="preserve"><value>Ask about the status or an active alert…</value></data>
+  <data name="Send question" xml:space="preserve"><value>Send question</value></data>
+  <data name="You do not have permission to use the assistant for this astronaut." xml:space="preserve"><value>You do not have permission to use the assistant for this astronaut.</value></data>
+  <data name="Claude is temporarily unavailable. Heartbeat's displayed status remains valid." xml:space="preserve"><value>Claude is temporarily unavailable. Heartbeat's displayed status remains valid.</value></data>
+  <data name="Could not contact the assistant. Check the connection and try again." xml:space="preserve"><value>Could not contact the assistant. Check the connection and try again.</value></data>
 </root>

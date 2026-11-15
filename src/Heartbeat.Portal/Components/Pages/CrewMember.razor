@@ -81,6 +81,11 @@
                     </dl>
                 </section>
 
+                @if (Session.HasPermission(Permissions.VitalsView))
+                {
+                    <AssistantPanel AstronautId="AstronautId" />
+                }
+
                 <section class="vitals-section" aria-labelledby="vitals-title">
                     <header class="section-heading">
                         <div>

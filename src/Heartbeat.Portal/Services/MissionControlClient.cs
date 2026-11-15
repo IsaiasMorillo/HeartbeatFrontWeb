@@ -70,6 +70,29 @@ public sealed class MissionControlClient(
                 : $"crew/{astronautId:D}/risk?profile={Uri.EscapeDataString(profileId)}",
             cancellationToken);
 
+    public async Task<AssistantResponse> AskAssistantAsync(
+        Guid astronautId,
+        string question,
+        string language,
+        CancellationToken cancellationToken = default)
+    {
+        using var request = new HttpRequestMessage(
+            HttpMethod.Post,
+            $"crew/{astronautId:D}/assistant/chat")
+        {
+            Content = JsonContent.Create(
+                new AssistantRequest(question, language),
+                options: MissionControlJsonOptions)
+        };
+        using var response = await SendAsync(request, cancellationToken);
+        await EnsureSuccessAsync(response, cancellationToken);
+
+        return await response.Content.ReadFromJsonAsync<AssistantResponse>(
+            MissionControlJsonOptions,
+            cancellationToken) ?? throw new InvalidDataException(
+                "The Mission Control API returned an empty assistant response.");
+    }
+
     public Task<PhantomComparisonResponse> GetPhantomComparisonAsync(
         IReadOnlyCollection<Guid>? profileIds = null,
         string environment = "station",

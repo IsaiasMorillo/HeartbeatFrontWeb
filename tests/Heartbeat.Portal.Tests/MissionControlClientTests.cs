@@ -87,6 +87,54 @@ public sealed class MissionControlClientTests
     }
 
     [TestMethod]
+    public async Task AssistantUsesTheSelectedAstronautAndMissionControlSession()
+    {
+        var astronautId = Guid.NewGuid();
+        string? path = null;
+        string? token = null;
+        string? body = null;
+
+        using var httpClient = new HttpClient(new StubHttpMessageHandler(async (request, cancellationToken) =>
+        {
+            path = request.RequestUri!.AbsolutePath;
+            token = request.Headers.Authorization?.Parameter;
+            body = await request.Content!.ReadAsStringAsync(cancellationToken);
+            return new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = JsonContent.Create(new
+                {
+                    answer = "Heartbeat reports one open alert.",
+                    generatedAt = DateTimeOffset.UtcNow,
+                    provider = "Anthropic",
+                    model = "claude-test",
+                    suggestedQuestions = new[] { "Which alert is open?" },
+                    disclaimer = "Decision support only."
+                })
+            };
+        }))
+        {
+            BaseAddress = new Uri("https://mission-control.test/api/mc/v1/")
+        };
+
+        var session = new MissionControlSession();
+        session.SetTokens("mc-access", DateTimeOffset.UtcNow.AddHours(1), "refresh", DateTimeOffset.UtcNow.AddHours(8));
+        var refresher = new MissionControlTokenRefresher(httpClient, session, new StubSessionStore());
+        var client = new MissionControlClient(httpClient, refresher);
+
+        AssistantResponse response = await client.AskAssistantAsync(
+            astronautId, "  Explain the alert  ", "en");
+
+        Assert.AreEqual($"/api/mc/v1/crew/{astronautId:D}/assistant/chat", path);
+        Assert.AreEqual("mc-access", token);
+        using JsonDocument requestJson = JsonDocument.Parse(body!);
+        Assert.AreEqual("  Explain the alert  ", requestJson.RootElement.GetProperty("question").GetString());
+        Assert.AreEqual("en", requestJson.RootElement.GetProperty("language").GetString());
+        Assert.AreEqual("Anthropic", response.Provider);
+        Assert.AreEqual("Heartbeat reports one open alert.", response.Answer);
+        Assert.AreEqual("Which alert is open?", response.SuggestedQuestions[0]);
+    }
+
+    [TestMethod]
     public async Task VitalsEndpointsSendFiltersAndDeserializeContractData()
     {
         var now = DateTimeOffset.UtcNow;
